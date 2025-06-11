@@ -83,3 +83,10 @@ func TestConcurrent(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkSingletonGet(b *testing.B) {
+	singleton := New(factory)
+	for n := 0; n < b.N; n++ {
+		singleton.Get()
+	}
+}
