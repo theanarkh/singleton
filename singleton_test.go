@@ -90,3 +90,45 @@ func BenchmarkSingletonGet(b *testing.B) {
 		singleton.Get()
 	}
 }
+
+type Interface interface {
+	Hello()
+}
+
+type IStruct struct{}
+
+func (s *IStruct) Hello() {}
+
+func TestInterfaceNew(t *testing.T) {
+	singleton := New(func() (*Interface, error) {
+		var i Interface = &IStruct{}
+		return &i, nil
+	})
+	instance, err := singleton.Get()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if instance == nil {
+		t.Fatal("singleton should not be nil")
+	}
+	(*instance).Hello()
+}
+
+func TestInterfaceWraperNew(t *testing.T) {
+	type Wrapper struct {
+		Interface
+	}
+	singleton := New(func() (*Wrapper, error) {
+		var i Interface = &IStruct{}
+		w := Wrapper{Interface: i}
+		return &w, nil
+	})
+	instance, err := singleton.Get()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if instance == nil {
+		t.Fatal("singleton should not be nil")
+	}
+	instance.Hello()
+}
